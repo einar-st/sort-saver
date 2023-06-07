@@ -48,18 +48,34 @@ def insert_sort(nums):
     yield nums, {}
 
 
-if __name__ == '__main__':
+def quick_sort(nums, top=True, *args):
 
-    import random
+    try:
+        lo, hi = args[0]
+    except IndexError:
+        lo = 0
+        hi = len(nums) - 1
 
-    all_nums = [i for i in range(1, 11)]
+    if lo >= hi:
+        return
 
-    nums = []
-    for i in range(len(all_nums)):
-        num = random.choice(all_nums)
-        nums.append(num)
-        all_nums.remove(num)
+    j = lo - 1
+    p = hi
 
-    print(nums)
-    for i in sel_sort(nums):
-        print(i)
+    for i in range(lo, hi):  # iterate all except p
+        if nums[i] < nums[p]:  # if less than p, swap with previous hi
+            j += 1
+            nums[i], nums[j] = nums[j], nums[i]
+        yield nums, {i: 'red', j: 'green', p: 'blue'}
+
+    # move pivot to correct spot
+    nums[p], nums[j + 1] = nums[j + 1], nums[p]
+
+    # sort left and right 'in-place'
+    for res in quick_sort(nums, False, (lo, j)):
+        yield res
+    for res in quick_sort(nums, False, (j + 2, hi)):
+        yield res
+
+    if top:
+        yield nums, {}

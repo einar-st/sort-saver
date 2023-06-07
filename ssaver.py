@@ -3,6 +3,7 @@ from curses import wrapper
 import random
 import sort_algs
 import time
+import sys
 
 
 def main(stdscr):
@@ -59,14 +60,19 @@ def main(stdscr):
     algs = [
         sort_algs.sel_sort,
         sort_algs.bubble_sort,
-        sort_algs.insert_sort
+        sort_algs.insert_sort,
+        sort_algs.quick_sort
     ]
     alg_names = [
         'Selection sort',
         'Bubble sort',
-        'Insert sort'
+        'Insert sort',
+        'Quick sort'
     ]
-    alg = 0
+    try:
+        alg = int(sys.argv[1])
+    except IndexError:
+        alg = 0
 
     nums_obj = algs[alg](nums)
 
@@ -95,7 +101,7 @@ def main(stdscr):
                 nums_obj = algs[0](nums)
                 alg = 0
         elif key == ord('r'):
-            nums = populate(maxy, maxx)
+            nums = populate(maxy, maxx, True)
 
         # Update creen
         stdscr.erase()
