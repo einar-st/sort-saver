@@ -1,2 +1,2 @@
 # sort-saver
-Sorting algorithm visualization for use as a terminal screensaver.
+Sorting algorithm visualization for use as a terminal screensaver or eyecandy.
