@@ -41,7 +41,7 @@ def main(stdscr):
     curses.curs_set(0)  # hide the cursor
     curses.use_default_colors()  # fix icky background issue
     stdscr.nodelay(1)  # non-blocking input
-    rate = 20
+    rate = 30
     stdscr.timeout(rate)  # refresh rate in milliseconds
     maxy, maxx = stdscr.getmaxyx()
 
@@ -95,13 +95,15 @@ def main(stdscr):
             stdscr.timeout(rate)  # refresh rate in milliseconds
         elif key == ord('n'):
             try:
+                nums = populate(maxy, maxx)
                 nums_obj = algs[alg + 1](nums)
                 alg += 1
             except IndexError:
+                nums = populate(maxy, maxx)
                 nums_obj = algs[0](nums)
                 alg = 0
         elif key == ord('r'):
-            nums = populate(maxy, maxx, True)
+            nums = populate(maxy, maxx)
 
         # Update creen
         stdscr.erase()

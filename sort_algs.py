@@ -5,11 +5,9 @@ def sel_sort(nums):
         for j in range(i + 1, len(nums)):
             if nums[j] < nums[low]:
                 low = j
-            vars = {low: 'green', i: 'red', j: 'blue'}
+            vars = {low: 'blue', i: 'red', j: 'green'}
             yield (nums, vars)
         nums[i], nums[low] = nums[low], nums[i]
-        vars = {i: 'red', j: 'blue'}
-        yield (nums, vars)
 
     vars = {}
     yield nums, vars
@@ -25,7 +23,7 @@ def bubble_sort(nums):
             y = x + 1
             if nums[x] > nums[y]:
                 nums[x], nums[y] = nums[y], nums[x]
-            vars = {y: 'red'}
+            vars = {y: 'blue'}
             yield nums, vars
 
     vars = {}
@@ -38,7 +36,7 @@ def insert_sort(nums):
 
     for x in range(1, len(nums)):
         for i in range(x, - 1, - 1):
-            vars = {i: 'red', x: 'blue'}
+            vars = {i: 'blue', x: 'green'}
             yield nums, vars
             if i == 0 or nums[i] > nums[i - 1]:
                 break
@@ -62,11 +60,22 @@ def quick_sort(nums, top=True, *args):
     j = lo - 1
     p = hi
 
+    # median of three
+    mots = [nums[lo], nums[int(len(nums) / 2)], nums[hi]]
+    mots.remove(min(mots))
+    mots.remove(max(mots))
+    mot = mots[0]
+
+    for i in [lo, int(len(nums) / 2)]:
+        if nums[i] == mot:
+            nums[i], nums[p] = nums[p], nums[i]
+            break
+
     for i in range(lo, hi):  # iterate all except p
         if nums[i] < nums[p]:  # if less than p, swap with previous hi
             j += 1
             nums[i], nums[j] = nums[j], nums[i]
-        yield nums, {i: 'red', j: 'green', p: 'blue'}
+        yield nums, {lo: 'red', i: 'blue', j: 'blue', p: 'green'}
 
     # move pivot to correct spot
     nums[p], nums[j + 1] = nums[j + 1], nums[p]
