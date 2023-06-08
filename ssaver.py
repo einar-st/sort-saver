@@ -1,43 +1,44 @@
 import curses
-from curses import wrapper
 import random
 import sort_algs
 import time
 import sys
 
 
+def populate(maxy, maxx):
+
+    # populate to width
+    nums = []
+    for i in range(1, maxx):
+        nums.append(random.choice(range(1, maxy)))
+    return nums
+
+    # only unique numbers
+    # return random.sample(list(range(1, maxy)), maxy-1)
+
+
+def visualize(nums, vars, stdscr, maxy, maxx, cols):
+
+    # draw columns representing numbers
+    for line in range(maxy - 1, -1, -1):
+        for i in range(len(nums)):
+            if nums[i] >= line + 1:
+                try:
+                    stdscr.addch(
+                        maxy - 1 - line,
+                        i + int((maxx - len(nums) - 1)/2),
+                        '\u2588', cols[vars[i]]
+                    )
+                except KeyError:
+                    stdscr.addch(
+                        maxy - 1 - line,
+                        i + int((maxx - len(nums) - 1)/2),
+                        '\u2588'
+                    )
+
+
 def main(stdscr):
 
-    def populate(maxy, maxx, unique=False):
-        lst_length = maxx - 1
-        nums = []
-        if unique:
-            maxx = maxy
-            nums = random.sample(list(range(1, maxx)), maxx-1)
-        else:
-            for i in range(1, lst_length + 1):
-                nums.append(random.choice(range(1, maxy)))
-        return nums
-
-    def visualize(nums, vars):
-
-        for line in range(maxy - 1, -1, -1):
-            for i in range(len(nums)):
-                if nums[i] >= line + 1:
-                    try:
-                        stdscr.addch(
-                            maxy - 1 - line,
-                            i + int((maxx - len(nums) - 1)/2),
-                            '\u2588', cols[vars[i]]
-                        )
-                    except KeyError:
-                        stdscr.addch(
-                            maxy - 1 - line,
-                            i + int((maxx - len(nums) - 1)/2),
-                            '\u2588'
-                        )
-
-    # Setup
     curses.curs_set(0)  # hide the cursor
     curses.use_default_colors()  # fix icky background issue
     stdscr.nodelay(1)  # non-blocking input
@@ -55,21 +56,23 @@ def main(stdscr):
         'green': curses.color_pair(3)
     }
 
-    # create list
     nums = populate(maxy, maxx)
-    algs = [1, 2, 3, 4]
+
+    try:
+        algs = [int(i) for i in sys.argv[1]]
+    except IndexError:
+        algs = [1, 2, 3, 4]
+
+    alg = 0
+
     alg_funcs = {
         1: (sort_algs.sel_sort, 'Selection sort'),
         2: (sort_algs.bubble_sort, 'Bubble sort'),
         3: (sort_algs.insert_sort, 'Insert sort'),
         4: (sort_algs.quick_sort, 'Quick sort')
     }
-    try:
-        alg = int(sys.argv[1])
-    except IndexError:
-        alg = 0
 
-    nums_obj = alg_funcs[algs[alg]][0](nums)
+    nums_gen = alg_funcs[algs[alg]][0](nums)
 
     change_rate = {
         259: 10,
@@ -79,41 +82,41 @@ def main(stdscr):
     # Main loop
     while True:
 
-        # Get user input
+        # user input
         key = stdscr.getch()
 
-        # Process user input
         if key == ord('q'):
-            break  # Exit the loop if 'q' is pressed
+            break  # exit with 'q'
         elif key in change_rate.keys():
             rate += change_rate[key]
             stdscr.timeout(rate)  # refresh rate in milliseconds
         elif key == ord('n'):
             try:
                 nums = populate(maxy, maxx)
-                nums_obj = alg_funcs[algs[alg + 1]][0](nums)
+                nums_gen = alg_funcs[algs[alg + 1]][0](nums)
                 alg += 1
             except IndexError:
                 nums = populate(maxy, maxx)
-                nums_obj = alg_funcs[algs[0]][0](nums)
+                nums_gen = alg_funcs[algs[0]][0](nums)
                 alg = 0
         elif key == ord('r'):
             nums = populate(maxy, maxx)
+            nums_gen = alg_funcs[algs[0]][0](nums)
 
         # Update creen
         stdscr.erase()
         try:
-            nums, vars = next(nums_obj)
+            nums, vars = next(nums_gen)
         except StopIteration:
             time.sleep(2)
             nums = populate(maxy, maxx)
             try:
-                nums_obj = alg_funcs[algs[alg + 1]][0](nums)
+                nums_gen = alg_funcs[algs[alg + 1]][0](nums)
                 alg += 1
             except IndexError:
-                nums_obj = alg_funcs[algs[0]][0](nums)
+                nums_gen = alg_funcs[algs[0]][0](nums)
                 alg = 0
-        visualize(nums, vars)
+        visualize(nums, vars, stdscr, maxy, maxx, cols)
         stdscr.addstr(0, 0, alg_funcs[algs[alg]][1])
         stdscr.addstr(1, 0, str(rate))
 
@@ -121,4 +124,4 @@ def main(stdscr):
 
 
 if __name__ == "__main__":
-    wrapper(main)
+    curses.wrapper(main)
