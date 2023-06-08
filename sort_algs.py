@@ -75,16 +75,16 @@ def quick_sort(nums, top=True, *args):
         if nums[i] < nums[p]:  # if less than p, swap with previous hi
             j += 1
             nums[i], nums[j] = nums[j], nums[i]
-        yield nums, {lo: 'red', i: 'blue', j: 'blue', p: 'green'}
+        yield nums, {j: 'blue', lo - 1: 'white', i: 'blue', lo: 'red', p: 'green'}
 
     # move pivot to correct spot
     nums[p], nums[j + 1] = nums[j + 1], nums[p]
 
     # sort left and right 'in-place'
-    for res in quick_sort(nums, False, (lo, j)):
-        yield res
-    for res in quick_sort(nums, False, (j + 2, hi)):
-        yield res
+    for part in quick_sort(nums, False, (lo, j)):
+        yield part
+    for part in quick_sort(nums, False, (j + 2, hi)):
+        yield part
 
     if top:
         yield nums, {}

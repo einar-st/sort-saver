@@ -57,24 +57,19 @@ def main(stdscr):
 
     # create list
     nums = populate(maxy, maxx)
-    algs = [
-        sort_algs.sel_sort,
-        sort_algs.bubble_sort,
-        sort_algs.insert_sort,
-        sort_algs.quick_sort
-    ]
-    alg_names = [
-        'Selection sort',
-        'Bubble sort',
-        'Insert sort',
-        'Quick sort'
-    ]
+    algs = [1, 2, 3, 4]
+    alg_funcs = {
+        1: (sort_algs.sel_sort, 'Selection sort'),
+        2: (sort_algs.bubble_sort, 'Bubble sort'),
+        3: (sort_algs.insert_sort, 'Insert sort'),
+        4: (sort_algs.quick_sort, 'Quick sort')
+    }
     try:
         alg = int(sys.argv[1])
     except IndexError:
         alg = 0
 
-    nums_obj = algs[alg](nums)
+    nums_obj = alg_funcs[algs[alg]][0](nums)
 
     change_rate = {
         259: 10,
@@ -96,11 +91,11 @@ def main(stdscr):
         elif key == ord('n'):
             try:
                 nums = populate(maxy, maxx)
-                nums_obj = algs[alg + 1](nums)
+                nums_obj = alg_funcs[algs[alg + 1]][0](nums)
                 alg += 1
             except IndexError:
                 nums = populate(maxy, maxx)
-                nums_obj = algs[0](nums)
+                nums_obj = alg_funcs[algs[0]][0](nums)
                 alg = 0
         elif key == ord('r'):
             nums = populate(maxy, maxx)
@@ -113,13 +108,13 @@ def main(stdscr):
             time.sleep(2)
             nums = populate(maxy, maxx)
             try:
-                nums_obj = algs[alg + 1](nums)
+                nums_obj = alg_funcs[algs[alg + 1]][0](nums)
                 alg += 1
             except IndexError:
-                nums_obj = algs[0](nums)
+                nums_obj = alg_funcs[algs[0]][0](nums)
                 alg = 0
         visualize(nums, vars)
-        stdscr.addstr(0, 0, alg_names[alg])
+        stdscr.addstr(0, 0, alg_funcs[algs[alg]][1])
         stdscr.addstr(1, 0, str(rate))
 
         stdscr.refresh()
